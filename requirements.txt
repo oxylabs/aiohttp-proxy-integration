@@ -1,0 +1,5 @@
+openpyxl
+pandas
+bs4
+aiohttp
+lxml
