@@ -97,7 +97,8 @@ async def create_jobs():
 if __name__ == "__main__":
     final_list = []
     start = time.perf_counter()
-    # Different Event Loop Policy must be loaded if you're using Windows OS to avoid "Event Loop is closed"
+    # Different Event Loop Policy must be loaded if you're using Windows OS 
+    # This helps to avoid "Event Loop is closed" error
     if sys.platform.startswith("win") and sys.version_info.minor >= 8:
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     try:
