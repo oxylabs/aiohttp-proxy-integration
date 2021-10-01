@@ -19,9 +19,9 @@ in range(1, 51)
 ]
 
 async def fetch(session, sem, url):
-        async with sem:
-            async with session.get(url, 
-                proxy=f"http://{USER}:{PASSWORD}@{END_POINT}"
+    async with sem:
+        async with session.get(url, 
+            proxy=f"http://{USER}:{PASSWORD}@{END_POINT}"
             ) as response:
                 await parse_url(await response.text())
 
