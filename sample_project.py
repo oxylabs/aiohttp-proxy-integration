@@ -33,6 +33,17 @@ async def parse_url(text):
     
 async def create_jobs():
     full_data = []
+      	data = {
+        "Title": product_data.select_one("h3 > a")["title"],
+	"URL": product_data.select_one("h3 > a").get("href")[5:],
+	"Product Price": product_data.select_one("p.price_color").text,
+	"Stars": product_data.select_one("p")["class"][1],
+	}
+	
+	full_data.append(data)
+	print(f"Grabbing book: {data['Title']}")
+	
+async def create_jobs():
     sem = asyncio.Semaphore(4)
     async with aiohttp.ClientSession() as session:
         get_results = await asyncio.gather(*[fetch(session, sem, url) for url in url_list])
@@ -43,7 +54,7 @@ if __name__ == "__main__":
     if sys.platform.startswith("win") and sys.version_info.minor >= 8:
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(create_jobs())
-    
+
     print(f"Total of {len(full_data)} products gathered in {time.time() - start} seconds")
     df = pd.DataFrame(full_data)
     df["URL"] = df["URL"].map(lambda x: ''.join(["https://books.toscrape.com/catalogue", x]))
