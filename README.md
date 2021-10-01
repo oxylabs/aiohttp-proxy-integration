@@ -56,7 +56,8 @@ PASSWORD = "pass"
 END_POINT = "pr.oxylabs.io:7777"
 
 # Generate a list of URLs to scrape
-url_list = [f"https://books.toscrape.com/catalogue/category/books_1/page-{page_num}.html" for page_num in range(1, 51)]
+url_list = [f"https://books.toscrape.com/catalogue/category/books_1/page-{page_num}.html" \
+for page_num in range(1, 51)]
 
 async def fetch(session, sem, url):
     async with sem:
