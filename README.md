@@ -111,7 +111,7 @@ if __name__ == "__main__":
     df["url"] = df["url"].map(lambda x: ''.join(["https://books.toscrape.com/catalogue", x]))
     filename = "scraped-books.csv"
     df.to_csv(filename, encoding='utf-8-sig', index=False)
-    print(f"\nExtracted data can be accessed at {os.path.join(os.getcwd(), filename)}")
+    print(f"\nExtracted data can be found at {os.path.join(os.getcwd(), filename)}")
 ```
 If you want to test the project's script by yourself, you'll need to install some additional packages. To do that, simply download `requirements.txt` file and use `pip` command:
 ```bash 
