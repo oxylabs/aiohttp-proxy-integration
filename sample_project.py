@@ -1,9 +1,10 @@
-import aiohttp
 import asyncio
+import time
+import sys
+
+import aiohttp
 from bs4 import BeautifulSoup
 import pandas as pd
-import sys
-import time
 
 USER = "user"
 PASSWORD = "pass"
@@ -30,20 +31,19 @@ async def parse_url(text):
 		print(f"Grabbing book: {data['Title']}")
 	
 async def create_jobs():
+	full_data = []
 	sem = asyncio.Semaphore(4)
 	async with aiohttp.ClientSession() as session:
 		get_results = await asyncio.gather(*[fetch(session, sem, url) for url in url_list])
 
 if __name__ == "__main__":
-	full_data = []
-	try: 
-		start = time.time()
-		# Different Event Loop Policy must be loaded if you're using Windows OS
-		if sys.platform.startswith("win") and sys.version_info.minor >= 8:
-			asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-		asyncio.run(create_jobs())
-	finally:
-		print(f"Total of {len(full_data)} products gathered in {time.time() - start} seconds")
-		df = pd.DataFrame(full_data)
-		df["URL"] = df["URL"].map(lambda x: ''.join(["https://books.toscrape.com/catalogue", x]))
-		df.to_csv("scraped-books.csv", encoding='utf-8-sig', index=False)
+	start = time.time()
+	# Different Event Loop Policy must be loaded if you're using Windows OS
+	if sys.platform.startswith("win") and sys.version_info.minor >= 8:
+		asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+	asyncio.run(create_jobs())
+	
+	print(f"Total of {len(full_data)} products gathered in {time.time() - start} seconds")
+	df = pd.DataFrame(full_data)
+	df["URL"] = df["URL"].map(lambda x: ''.join(["https://books.toscrape.com/catalogue", x]))
+	df.to_csv("scraped-books.csv", encoding='utf-8-sig', index=False)
