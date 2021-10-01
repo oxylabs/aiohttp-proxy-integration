@@ -20,7 +20,9 @@ async def fetch():
     async with aiohttp.ClientSession() as session:
         proxy_auth = aiohttp.BasicAuth(USER, PASS)
         async with session.get("http://ip.oxylabs.io", 
-            proxy="http://pr.oxylabs.io:7777", proxy_auth=proxy_auth) as resp:
+            proxy="http://pr.oxylabs.io:7777", 
+            proxy_auth=proxy_auth 
+        ) as resp:
             print(await resp.text())
 ```
 The second one is by passing authentication credentials in proxy URL:
@@ -32,13 +34,15 @@ END_POINT = "pr.oxylabs.io:7777"
 async def fetch():
     async with aiohttp.ClientSession() as session:
         async with session.get("http://ip.oxylabs.io", 
-            proxy=f"http://{USER}:{PASSWORD}@{END_POINT}") as resp: 
+            proxy=f"http://{USER}:{PASSWORD}@{END_POINT}"
+        ) as resp: 
             print(await resp.text())
 ```
 In order to use your own proxies, adjust `user` and `pass` fields with your Oxylabs account credentials.
 
 ## Testing Proxies
-To see if the proxy is working, try visiting https://ip.oxylabs.io. If everything is working correctly, it will return an IP address of a proxy that you're currently using.
+To see if the proxy is working, try visiting https://ip.oxylabs.io. 
+If everything is working correctly, it will return an IP address of a proxy that you're currently using.
 
 ## Sample Project: Extracting Data From Multiple Pages
 To better understand how residential proxies can be utilized for asynchronous data extracting operations, we wrote a sample project to scrape product listing data and save the output to a `CSV` file. The proxy rotation allows us to send multiple requests at once risk-free – meaning that we don't need to worry about CAPTCHA or getting blocked. This makes the web scraping process extremely fast and efficient – now you can extract data from thousands of products in a matter of seconds!
@@ -46,54 +50,67 @@ To better understand how residential proxies can be utilized for asynchronous da
 import asyncio
 import time
 import sys
+import os
 
-import aiohttp
 from bs4 import BeautifulSoup
 import pandas as pd
+import aiohttp
 
 USER = "user"
 PASSWORD = "pass"
 END_POINT = "pr.oxylabs.io:7777"
 
 # Generate a list of URLs to scrape
-url_list = [f"https://books.toscrape.com/catalogue/category/books_1/page-{page_num}.html" \
-for page_num in range(1, 51)]
+url_list = [
+f"https://books.toscrape.com/catalogue/category/books_1/page-{page_num}.html" 
+for page_num 
+in range(1, 51)
+]
 
 async def fetch(session, sem, url):
-    async with sem:
-        async with session.get(url, proxy=f"http://{USER}:{PASSWORD}@{END_POINT}") as response: 
-            await parse_url(await response.text())
+        async with sem:
+            async with session.get(url, 
+                proxy=f"http://{USER}:{PASSWORD}@{END_POINT}"
+            ) as response:
+                await parse_url(await response.text())
 
 async def parse_url(text):
     soup = BeautifulSoup(text, "lxml")
     for product_data in soup.select("ol.row > li > article.product_pod"):
         data = {
-        "Title": product_data.select_one("h3 > a")["title"],
-        "URL": product_data.select_one("h3 > a").get("href")[5:],
-        "Product Price": product_data.select_one("p.price_color").text,
-        "Stars": product_data.select_one("p")["class"][1],
+            "title": product_data.select_one("h3 > a")["title"],
+            "url": product_data.select_one("h3 > a").get("href")[5:],
+            "product_price": product_data.select_one("p.price_color").text,
+            "stars": product_data.select_one("p")["class"][1],
         }
-        full_data.append(data)
-        print(f"Grabbing book: {data['Title']}")
+        final_list.append(data)
+        print(f"Grabing book: {data['title']}")
     
 async def create_jobs():
-    full_data = []
+    final_res = []
     sem = asyncio.Semaphore(4)
     async with aiohttp.ClientSession() as session:
-        get_results = await asyncio.gather(*[fetch(session, sem, url) for url in url_list])
-
+        await asyncio.gather(*[fetch(session, sem, url) 
+        for url in url_list
+        ])
+        
 if __name__ == "__main__":
-    start = time.time()
-    # Different Event Loop Policy must be loaded if you're using Windows OS
+    final_list = []
+    start = time.perf_counter()
+    # Different Event Loop Policy must be loaded if you're using Windows OS to avoid "Event Loop is closed"
     if sys.platform.startswith("win") and sys.version_info.minor >= 8:
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    asyncio.run(create_jobs())
+    try:
+      asyncio.run(create_jobs())   
+    except Exception: 
+        print("We broke, but there might still be some results")
     
-    print(f"Total of {len(full_data)} products gathered in {time.time() - start} seconds")
-    df = pd.DataFrame(full_data)
-    df["URL"] = df["URL"].map(lambda x: ''.join(["https://books.toscrape.com/catalogue", x]))
-    df.to_csv("scraped-books.csv", encoding='utf-8-sig', index=False)
-
+    print(f"\nTotal of {len(final_list)} products gathered in {time.perf_counter() - start:.2f} seconds")
+    df = pd.DataFrame(final_list)
+    df["url"] = df["url"].map(lambda x: ''.join(["https://books.toscrape.com/catalogue", x]))
+    filename = "scraped-books.csv"
+    df.to_csv(filename, encoding='utf-8-sig', index=False)
+    print(f"\nExtracted data can be accessed at {os.path.join(os.getcwd(), filename)}")
 ```
 If you want to test the project's script by yourself, you'll need to install some additional packages. To do that, simply download `requirements.txt` file and use `pip` command:
 ```bash 
