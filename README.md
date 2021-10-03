@@ -107,7 +107,7 @@ if __name__ == "__main__":
         print("We broke, but there might still be some results")
     
     print(f"""\nTotal of {len(final_list)} products gathered in 
-{time.perf_counter() - start:.2f} seconds")"""
+    {time.perf_counter() - start:.2f} seconds")"""
     df = pd.DataFrame(final_list)
     df["url"] = df["url"].map(lambda x: ''.join(["https://books.toscrape.com/catalogue", x]))
     filename = "scraped-books.csv"
