@@ -48,7 +48,8 @@ async def create_jobs():
 if __name__ == "__main__":
     final_list = []
     start = time.perf_counter()
-    # Different Event Loop Policy must be loaded if you're using Windows OS to avoid "Event Loop is closed"
+     # Different Event Loop Policy must be loaded if you're using Windows OS 
+    # This helps to avoid "Event Loop is closed" error
     if sys.platform.startswith("win") and sys.version_info.minor >= 8:
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     try:
@@ -56,7 +57,8 @@ if __name__ == "__main__":
     except Exception: 
         print("We broke, but there might still be some results")
     
-    print(f"\nTotal of {len(final_list)} products gathered in {time.perf_counter() - start:.2f} seconds")
+    print(f"""\nTotal of {len(final_list)} products gathered in 
+	{time.perf_counter() - start:.2f} seconds")"""
     df = pd.DataFrame(final_list)
     df["url"] = df["url"].map(lambda x: ''.join(["https://books.toscrape.com/catalogue", x]))
     filename = "scraped-books.csv"
