@@ -1,4 +1,3 @@
-openpyxl
 pandas
 bs4
 aiohttp
