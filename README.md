@@ -15,7 +15,7 @@ you can install it by using `pip` command:
 pip install aiohttp
 ```
 
-You can get Residential Proxies here: https://oxylabs.io/products/residential-proxy-pool
+You can get Residential Proxies here: https://oxy.yt/arWH
 
 ## Proxy Authentication
 
