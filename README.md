@@ -38,7 +38,7 @@ async def fetch():
     async with aiohttp.ClientSession() as session:
         proxy_auth = aiohttp.BasicAuth(USER, PASSWORD)
         async with session.get(
-                "http://ip.oxylabs.io", 
+                "https://ip.oxylabs.io/location", 
                 proxy="http://pr.oxylabs.io:7777", 
                 proxy_auth=proxy_auth ,
         ) as resp:
@@ -57,7 +57,7 @@ END_POINT = "pr.oxylabs.io:7777"
 async def fetch():
     async with aiohttp.ClientSession() as session:
         async with session.get(
-                "http://ip.oxylabs.io", 
+                "https://ip.oxylabs.io/location", 
                 proxy=f"http://{USER}:{PASSWORD}@{END_POINT}",
         ) as resp: 
             print(await resp.text())
@@ -68,7 +68,7 @@ Oxylabs account credentials.
 
 ## Testing Proxies
 
-To see if the proxy is working, try visiting https://ip.oxylabs.io. 
+To see if the proxy is working, try visiting https://ip.oxylabs.io/location. 
 If everything is working correctly, it will return an IP address of a proxy 
 that you're currently using.
 
