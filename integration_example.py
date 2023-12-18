@@ -11,7 +11,7 @@ END_POINT = "pr.oxylabs.io:7777"
 # async def fetch():
 #     async with aiohttp.ClientSession() as session:
 #         proxy_auth = aiohttp.BasicAuth(USER, PASS)
-#         async with session.get("http://ip.oxylabs.io", 
+#         async with session.get("https://ip.oxylabs.io/location", 
 #             proxy="http://pr.oxylabs.io:7777", 
 #             proxy_auth=proxy_auth 
 #         ) as response:
@@ -21,7 +21,7 @@ END_POINT = "pr.oxylabs.io:7777"
  
 async def fetch():
     async with aiohttp.ClientSession() as session:
-        async with session.get("http://ip.oxylabs.io", 
+        async with session.get("https://ip.oxylabs.io/location", 
             proxy=f"http://{USER}:{PASSWORD}@{END_POINT}"
         ) as response: 
             print(await response.text())
